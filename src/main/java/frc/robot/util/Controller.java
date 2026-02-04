@@ -6,34 +6,14 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 
-public class Controller {
-
-    CommandXboxController controller;
-
+public class Controller extends CommandXboxController {
     /***
      * Class that adds additional controls for things like vibration and commands for sequencing rumble more easily.
      * 
      * @param id id of the controller being handled, which will create a new controller object, accessed through getController().
      */
     public Controller(int id) {
-        controller = new CommandXboxController(id);
-    }
-
-    /***
-     * Class that adds additional controls for things like vibration and commands for sequencing rumble more easily.
-     * 
-     * @param controller Directly passes in the controller being handled, rather than the id to create a new controller. The controller can be accessed by calling getController().
-     */
-    public Controller(CommandXboxController controller) {
-        this.controller = controller;
-    }
-
-    /***
-     * 
-     * @return The CommandXboxController being handled by this Controller object.
-     */
-    public CommandXboxController getController() {
-        return controller;
+        super(id);
     }
 
     /**
@@ -41,23 +21,7 @@ public class Controller {
      * @return If the controller is connected to the Driver Station.
      */
     public boolean isConnected() {
-        return controller.isConnected();
-    }
-
-    /*** Method to make the controller vibrate with a certain power and position.
-     * 
-     * @param type Rumble on either the left or right vibration motor, or both.
-     * @param power The power of the vibration.
-     */
-    public void rumble(RumbleType type, double power) {
-        controller.setRumble(type, power);
-    }
-
-    /***
-     * Stops rumble on both vibration motors of the controller.
-     */
-    public void cancelRumble() {
-        controller.setRumble(RumbleType.kBothRumble, 0);
+        return isConnected();
     }
 
     /*** Command to make the controller vibrate with a certain power and position.
@@ -65,8 +29,15 @@ public class Controller {
      * @param type Rumble on either the left or right vibration motor, or both.
      * @param power The power of the vibration.
      */
-    public Command setRumble(RumbleType type, double power) {
-        return Commands.runOnce(() -> rumble(type, power));
+    public Command rumble(RumbleType type, double power) {
+        return Commands.runOnce(() -> setRumble(type, power));
+    }
+
+    /***
+     * Stops rumble on both vibration motors of the controller.
+     */
+    public void cancelRumble() {
+        setRumble(RumbleType.kBothRumble, 0);
     }
 
     /***
@@ -84,7 +55,7 @@ public class Controller {
      * @return Command to make controller rumble.
      */
     public Command rumbleThenStop(RumbleType type, double power, double time) {
-        return setRumble(type, power).andThen(new WaitCommand(time)).andThen(stopRumble()).andThen(new WaitCommand(time));
+        return rumble(type, power).andThen(new WaitCommand(time)).andThen(stopRumble()).andThen(new WaitCommand(time));
     }
 
     /** Command to make the controller rumble on certain vibration motors for a set period of time, and then stops the vibration. This sequence repeats twice after.

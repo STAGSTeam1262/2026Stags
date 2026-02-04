@@ -4,26 +4,16 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.networktables.StringPublisher;
 import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.DriverStation.Alliance;
-import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants;
 
 public class Superstructure extends SubsystemBase {
 
     Drivetrain drivetrain;
-    public Alliance currentAlliance;
     public Pose2d allianceHubPosition = Constants.FieldConstants.blueHubCenter;
 
     public Superstructure(Drivetrain drivetrain) {
         this.drivetrain = drivetrain;
-        Trigger setAlliance = new Trigger(() -> DriverStation.getAlliance().isPresent());
-        setAlliance.onTrue(Commands.runOnce(() -> {
-            if (DriverStation.getAlliance().isPresent()) {
-                currentAlliance = DriverStation.getAlliance().get();
-            }
-        }));
     }
     
     public enum RobotState {

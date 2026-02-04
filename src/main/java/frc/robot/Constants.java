@@ -6,17 +6,14 @@ import static edu.wpi.first.units.Units.RotationsPerSecond;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.generated.TunerConstants;
 import frc.robot.util.Controller;
 
 public class Constants {
     
     public static final class OperatorConstants {
-        public static final CommandXboxController driverController = new CommandXboxController(0);
-        public static final CommandXboxController operatorController = new CommandXboxController(1);
-        public static final Controller driverControllerUtil = new Controller(driverController);
-        public static final Controller operatorControllerUtil = new Controller(operatorController);
+        public static final Controller driverController = new Controller(0);
+        public static final Controller operatorController = new Controller(1);
     }
 
     public static final class FieldConstants {

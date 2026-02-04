@@ -65,7 +65,7 @@ public class Drivetrain extends TunerSwerveDrivetrain implements Subsystem {
             .withDeadband(Constants.DriveConstants.MaxSpeed * 0.1).withRotationalDeadband(Constants.DriveConstants.MaxAngularRate * 0.1)
             .withForwardPerspective(ForwardPerspectiveValue.BlueAlliance)
             .withDriveRequestType(DriveRequestType.OpenLoopVoltage)
-            .withHeadingPID(6, 0, 0); /* change these values for your robot */
+            .withHeadingPID(8, 0, 0);
 
     /* SysId routine for characterizing translation. This is used to find PID gains for the drive motors. */
     private final SysIdRoutine m_sysIdRoutineTranslation = new SysIdRoutine(
