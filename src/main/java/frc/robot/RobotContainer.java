@@ -67,7 +67,8 @@ public class RobotContainer {
         // Reset the field-centric heading on left bumper press.
         Constants.OperatorConstants.driverController.a().onTrue(drivetrain.runOnce(drivetrain::seedFieldCentric));
 
-        Constants.OperatorConstants.driverController.rightBumper().whileTrue(drivetrain.faceTowardsTarget);
+        Constants.OperatorConstants.driverController.leftBumper().whileTrue(drivetrain.faceDriveDirection);
+        Constants.OperatorConstants.driverController.rightBumper().whileTrue(drivetrain.faceTarget);
 
         drivetrain.registerTelemetry(logger::telemeterize);
     }
