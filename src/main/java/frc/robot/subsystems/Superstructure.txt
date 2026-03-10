@@ -1,0 +1,78 @@
+Superstructure (Subsystem)
+This is a subsystem that handles all state machine and control work. If a control is inputted
+to move a subsystem (mostly excluding the drivetrain), then the superstructure will coordinate those movements.
+
+Enums:
+
+- RobotState (The operation that the robot is currently trying to complete. This directs all subsystems)
+    * IDLE (When robot is disabled or no control is being handled)
+    * INTAKING (When robot is intaking)
+    * SHOOTING (When robot is shooting or passing)
+    * SHOOTING_INTAKING (When robot is intaking while shooting or passing)
+    * CLIMBER_UP (Move the climber up to climb bar)
+    * CLIMBER_DOWN (Move the climber down to climb bar)
+
+- FallbackMode (Tells the turret, vision, and drivetrain how to interact)
+    * ALL_OPERATIONAL (When vision and turret are working. Normal operation)
+    * VISION_DOWN (Turret will move to zero, and act as a fixed shooter)
+    * TURRET_DOWN (Drivetrain will rotate, acting like turret)
+    * ALL_DOWN (Good luck)
+
+Functions:
+
+- void stop()
+    Stops all motors on all subsystems. Acts as a sudo E-STOP, without stopping the drivetrain.
+
+- Pose2d getRobotPose()
+    Returns the pose of the drivetrain.
+
+- boolean canPass()
+    Returns if the robot can pass to their side of the field, based on their position.
+
+- void setRobotState()
+    Sets the robot's state. Will set to SHOOTING_INTAKING if one of the two is currently active when the other one is being set.
+
+- void applyState()
+    Applies the controls corresponding to the state currently active.
+
+- void idle()
+    Moves all subsystems to their idle position
+
+- void intake()
+    Moves the intake into position, and then runs the rollers.
+
+- void idleIntake()
+    Moves the intake back into the robot, and stops the rollers.
+
+- void shoot()
+    Runs all subsystem commands corresponding to shooting.
+
+- void idleShoot()
+    Stops the turret, and stops the shooter wheels.
+
+- void climberUp()
+    Moves the climber up before driving into the bar.
+
+- void climberDown()
+    Moves the climber down to raise off the ground.
+
+There are other methods, but these are helper methods or figure out shot information, 
+rather than subsystem controls, so they can be added as needed.
+
+Additional:
+
+- record ShotData
+    Stores the target, the distance from the robot to the target, and the angle from the robot to the target.
+    periodic() calculates and sends this information to the rest of the robot.
+
+- Translation2d getTarget()
+    Uses the alliance information, if the robot should be passing, and the robot state to decide where fuel should be shot.
+
+- Rotation2d getAngleToTarget(Translation2d target)
+    Receives a shot target, and then returns the angle to that target from the drivetrain.
+
+- double getDistanceToTarget(Translation2d target)
+    Receives a shot target, and returns the angle from the robot to the target.
+
+- ShotData calculateShotData(Translation2d target, double distance, Rotation2d angle)
+    Returns a ShotData variable containing current shot information.

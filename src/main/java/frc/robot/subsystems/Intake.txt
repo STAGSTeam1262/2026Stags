@@ -1,0 +1,17 @@
+Intake (Subsystem)
+    The intake is a set of rollers that can deploy and retract from the robot's frame.
+    It picks up fuel and pretty much puts it into our hopper. This is relatively simple,
+    so not much subsystem logic is required.
+
+Functions:
+- stop()
+    Stops motors in this subsystem.
+
+- setRollerVoltage(double voltage)
+    Sets the roller motor speed in volts.
+
+- setRackVoltage(double voltage)
+    Sets the intake rack speed in volts. This will either deploy or retract the intake.
+
+- periodic()
+    Periodically logs voltage and other information.

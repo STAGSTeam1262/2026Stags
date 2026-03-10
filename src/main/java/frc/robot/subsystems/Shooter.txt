@@ -1,0 +1,17 @@
+Shooter (Subsystem)
+    The shooter shoots fuel into the hub and onto our alliance side when passing.
+    ShotData is sent from the superstructure, which is then used to calculate shooter speed.
+
+Functions:
+- stop()
+    Stops all motors.
+
+- setShooterVoltage(double voltage)
+    Sets the voltage of the shooter.
+
+- calculateShooterVoltage(double distance)
+    Uses the distance from a target (in meters) to
+    calculate the speed the shooter should be running at.
+
+- periodic()
+    Logs shooter voltage and other random information.

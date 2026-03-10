@@ -1,0 +1,22 @@
+Turret (Subsystem)
+    The turret acts as a way of aiming the shooter (which makes it easier for the driver). 
+    This enables shooting while intaking, more precise shooting in general.
+
+Functions:
+- stop()
+    Stops the turret motors.
+
+- calculateTargetAngle(Rotation2d angle)
+    Takes the shot angle from the robot to the target, and then adjusts this angle for the turret.
+
+- moveToAngle(double angle)
+    Takes an angle and moves the turret to face that angle.
+
+- fixTurretToAngle(double angle)
+    Takes an angle and moves the turret to face that angle. The turret will stop tracking the target until it is told to again.
+
+- startTrackingTarget()
+    Makes the turret begin targeting an angle. This will also apply if the turret has been fixed to an angle.
+
+- periodic()
+    Logs turret angle, target angle. Also grabs shot information, and readjusts the target angle.
