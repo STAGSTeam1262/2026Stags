@@ -32,6 +32,7 @@ import edu.wpi.first.wpilibj2.command.Subsystem;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.Constants;
 import frc.robot.generated.TunerConstants.TunerSwerveDrivetrain;
+import frc.robot.subsystems.Superstructure.ShotData;
 
 /**
  * Class that extends the Phoenix 6 SwerveDrivetrain class and implements
@@ -65,7 +66,7 @@ public class Drivetrain extends TunerSwerveDrivetrain implements Subsystem {
     private final SwerveRequest.FieldCentricFacingAngle drive = new SwerveRequest.FieldCentricFacingAngle()
             .withDeadband(Constants.DriveConstants.MaxSpeed * 0.1).withRotationalDeadband(Constants.DriveConstants.MaxAngularRate * 0.1)
             .withDriveRequestType(DriveRequestType.OpenLoopVoltage)
-            .withHeadingPID(11, 0, 0);
+            .withHeadingPID(7, 0, 0);
 
     /* SysId routine for characterizing translation. This is used to find PID gains for the drive motors. */
     private final SysIdRoutine m_sysIdRoutineTranslation = new SysIdRoutine(
@@ -341,16 +342,21 @@ public class Drivetrain extends TunerSwerveDrivetrain implements Subsystem {
 
     public Command faceTarget = run(() -> {
         Pose2d drivePose = getState().Pose;
-        
-        double deltaX = Constants.FieldConstants.blueHubCenter.getX() - drivePose.getX();
-        double deltaY = Constants.FieldConstants.blueHubCenter.getY() - drivePose.getY();
-        double angle = Math.toDegrees(Math.atan2(deltaY, deltaX));
 
-        this.setControl(
-            drive.withVelocityX(-MathUtil.applyDeadband(Constants.OperatorConstants.driverController.getLeftY(), 0.1) * Constants.DriveConstants.MaxSpeed) // Drive forward with negative Y (forward)
-            .withVelocityY(-MathUtil.applyDeadband(Constants.OperatorConstants.driverController.getLeftX(), 0.1) * Constants.DriveConstants.MaxSpeed) // Drive left with negative X (left)
-            .withTargetDirection(Rotation2d.fromDegrees(angle))
-        );
+        if (superstructure.shotData != null) {
+
+            ShotData shotData = superstructure.shotData;
+        
+            double deltaX = shotData.shotPosition().getX() - drivePose.getX();
+            double deltaY = shotData.shotPosition().getY() - drivePose.getY();
+            double angle = Math.toDegrees(Math.atan2(deltaY, deltaX));
+
+            this.setControl(
+                drive.withVelocityX(-MathUtil.applyDeadband(Constants.OperatorConstants.driverController.getLeftY(), 0.1) * Constants.DriveConstants.MaxSpeed) // Drive forward with negative Y (forward)
+                .withVelocityY(-MathUtil.applyDeadband(Constants.OperatorConstants.driverController.getLeftX(), 0.1) * Constants.DriveConstants.MaxSpeed) // Drive left with negative X (left)
+                .withTargetDirection(Rotation2d.fromDegrees(angle).plus(Rotation2d.k180deg))
+            );
+        }
     });
 
     public Command faceDriveDirection = run(() -> {
@@ -358,11 +364,7 @@ public class Drivetrain extends TunerSwerveDrivetrain implements Subsystem {
         double leftX = -MathUtil.applyDeadband(Constants.OperatorConstants.driverController.getLeftX(), 0.1);
         double leftY = -MathUtil.applyDeadband(Constants.OperatorConstants.driverController.getLeftY(), 0.1);
         Constants.OperatorConstants.driverController.getRawAxis(0);
-        angle = Math.toDegrees(Math.atan2(leftX, leftY)); 
-
-        if (leftX == 0 && leftY == 0) {
-            angle = getState().Pose.getRotation().getDegrees();
-        }
+        angle = Math.toDegrees(Math.atan2(leftX, leftY));
         
         this.setControl(
             drive.withVelocityX(-MathUtil.applyDeadband(Constants.OperatorConstants.driverController.getLeftY(), 0.1) * Constants.DriveConstants.MaxSpeed) // Drive forward with negative Y (forward)

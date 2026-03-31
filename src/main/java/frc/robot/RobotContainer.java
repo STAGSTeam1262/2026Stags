@@ -12,15 +12,15 @@ import static edu.wpi.first.units.Units.Meter;
 import com.ctre.phoenix6.swerve.SwerveRequest;
 
 import com.pathplanner.lib.auto.AutoBuilder;
+import com.pathplanner.lib.auto.NamedCommands;
 import com.pathplanner.lib.commands.FollowPathCommand;
 
 import edu.wpi.first.math.MathUtil;
-import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
-import edu.wpi.first.wpilibj2.command.ConditionalCommand;
+import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.RobotModeTriggers;
 
 import frc.robot.generated.TunerConstants;
@@ -29,6 +29,7 @@ import frc.robot.subsystems.Intake;
 import frc.robot.subsystems.Shooter;
 import frc.robot.subsystems.Superstructure;
 import frc.robot.subsystems.Turret;
+import frc.robot.subsystems.Vision;
 import frc.robot.subsystems.Superstructure.RobotState;
 import frc.robot.util.FuelSim;
 
@@ -37,25 +38,32 @@ public class RobotContainer {
     private final SwerveRequest.FieldCentric drive = new SwerveRequest.FieldCentric()
             .withDeadband(Constants.DriveConstants.MaxSpeed * 0.1).withRotationalDeadband(Constants.DriveConstants.MaxAngularRate * 0.1) // Add a 10% deadband
             .withDriveRequestType(DriveRequestType.OpenLoopVoltage); // Use open-loop control for drive motors
-    // private final SwerveRequest.SwerveDriveBrake brake = new SwerveRequest.SwerveDriveBrake();
-
-    private final SwerveRequest.FieldCentricFacingAngle rotationDrive = new SwerveRequest.FieldCentricFacingAngle()
-            .withDeadband(Constants.DriveConstants.MaxSpeed * 0.1).withRotationalDeadband(Constants.DriveConstants.MaxAngularRate * 0.1)
-            .withDriveRequestType(DriveRequestType.OpenLoopVoltage)
-            .withHeadingPID(11, 0, 0);
+    private final SwerveRequest.SwerveDriveBrake brake = new SwerveRequest.SwerveDriveBrake();
 
     private final Telemetry logger = new Telemetry(Constants.DriveConstants.MaxSpeed);
 
     public final Drivetrain drivetrain = TunerConstants.createDrivetrain();
+    public final Vision vision = new Vision(drivetrain);
     public final Intake intake = new Intake();
     public final Shooter shooter = new Shooter();
     public final Turret turret = new Turret();
-    public final Superstructure superstructure = new Superstructure(drivetrain, intake, shooter, turret);
+    public final Superstructure superstructure = new Superstructure(drivetrain, vision, intake, shooter, turret);
 
     /* Path follower */
     private final SendableChooser<Command> autoChooser;
 
     public RobotContainer() {
+        NamedCommands.registerCommand("shoot", Commands.runOnce(() -> superstructure.setRobotState(RobotState.SHOOTING)));
+        NamedCommands.registerCommand("prepareThenShoot", Commands.runOnce(() -> superstructure.setRobotState(RobotState.PREP_SHOOT)).andThen(new WaitCommand(0.5)).andThen(Commands.runOnce(() -> superstructure.setRobotState(RobotState.SHOOTING))));
+        NamedCommands.registerCommand("idleShoot", Commands.runOnce(() -> superstructure.setRobotState(RobotState.IDLE_SHOOTING)));
+
+        NamedCommands.registerCommand("intake", Commands.runOnce(() -> superstructure.setRobotState(RobotState.INTAKING)));
+        NamedCommands.registerCommand("idleIntake", Commands.runOnce(() -> superstructure.setRobotState(RobotState.IDLE_INTAKING)));
+        NamedCommands.registerCommand("deployIntake", Commands.runOnce(() -> intake.runDeploy(-5)));
+        NamedCommands.registerCommand("retractIntake", Commands.runOnce(() -> intake.runDeploy(5)));
+        NamedCommands.registerCommand("modulateIntake", Commands.none());
+        NamedCommands.registerCommand("idleModulateIntake", Commands.none());
+
         autoChooser = AutoBuilder.buildAutoChooser("Tests");
         SmartDashboard.putData("Auto Mode", autoChooser);
 
@@ -81,11 +89,17 @@ public class RobotContainer {
 
         // Reset the field-centric heading on left bumper press.
         Constants.OperatorConstants.driverController.leftBumper().whileTrue(drivetrain.faceDriveDirection);
+        Constants.OperatorConstants.driverController.rightBumper().whileTrue(drivetrain.faceTarget);
+        Constants.OperatorConstants.driverController.b().whileTrue(drivetrain.applyRequest(() -> brake));
 
         Constants.OperatorConstants.driverController.a().onTrue(drivetrain.runOnce(drivetrain::seedFieldCentric));
 
         Constants.OperatorConstants.operatorController.leftTrigger().onTrue(Commands.runOnce(() -> superstructure.setRobotState(RobotState.INTAKING))).onFalse(Commands.runOnce(() -> superstructure.setRobotState(RobotState.IDLE_INTAKING)));
-        Constants.OperatorConstants.operatorController.rightTrigger().onTrue(Commands.runOnce(() -> superstructure.setRobotState(RobotState.SHOOTING))).onFalse(Commands.runOnce(() -> superstructure.setRobotState(RobotState.IDLE_SHOOTING)));
+        Constants.OperatorConstants.operatorController.rightTrigger().whileTrue(NamedCommands.getCommand("prepareThenShoot")).onFalse(Commands.runOnce(() -> superstructure.setRobotState(RobotState.IDLE_SHOOTING)));
+
+        Constants.OperatorConstants.operatorController.leftBumper().onTrue(Commands.runOnce(() -> intake.runDeploy(5))).onFalse(Commands.runOnce(() -> intake.runDeploy(0)));
+        Constants.OperatorConstants.operatorController.rightBumper().onTrue(Commands.runOnce(() -> intake.runDeploy(-5))).onFalse(Commands.runOnce(() -> intake.runDeploy(0)));
+        Constants.OperatorConstants.operatorController.y().onTrue(Commands.runOnce(() -> superstructure.setRobotState(RobotState.BACKUP))).onFalse(Commands.runOnce(() -> superstructure.setRobotState(RobotState.IDLE)));
 
         drivetrain.registerTelemetry(logger::telemeterize);
     }
@@ -120,5 +134,5 @@ public class RobotContainer {
             })
             .withName("Reset Fuel")
             .ignoringDisable(true));
-}
+    }
 }
