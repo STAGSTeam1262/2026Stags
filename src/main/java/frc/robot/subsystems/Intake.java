@@ -27,7 +27,7 @@ public class Intake extends SubsystemBase {
 
     TalonFX intakeDeploy = new TalonFX(Constants.CANConstants.IntakeDeployID, Constants.CANConstants.rio);
     PositionVoltage positionControl = new PositionVoltage(0).withSlot(0);
-    Trigger hardStop = new Trigger(() -> intakeDeploy.getSupplyCurrent().getValueAsDouble() >= 20).debounce(0.1);
+    public Trigger hardStop = new Trigger(() -> intakeDeploy.getSupplyCurrent().getValueAsDouble() >= 20).debounce(0.3);
     DoublePublisher intakeDeployCurrent = NetworkTableInstance.getDefault().getDoubleTopic("Subsystems/Intake/Deploy Current").publish();
     BooleanPublisher intakeHardStopPublisher = NetworkTableInstance.getDefault().getBooleanTopic("Subsystems/Intake/Deploy Hard Stop").publish();
 

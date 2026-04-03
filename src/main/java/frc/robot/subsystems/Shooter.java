@@ -1,6 +1,5 @@
 package frc.robot.subsystems;
 
-import com.ctre.phoenix6.configs.AudioConfigs;
 import com.ctre.phoenix6.configs.Slot0Configs;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.VelocityVoltage;
@@ -17,30 +16,37 @@ public class Shooter extends SubsystemBase {
     Superstructure superstructure;
 
     TalonFX feeder = new TalonFX(Constants.CANConstants.FeederID, Constants.CANConstants.rio);
-    double targetFeederVoltage = 0.0;
     DoublePublisher feederSpeedPublisher = NetworkTableInstance.getDefault().getDoubleTopic("Subsystems/Feeder/Speed").publish();
     DoublePublisher feederVoltagePublisher = NetworkTableInstance.getDefault().getDoubleTopic("Subsystems/Feeder/Voltage").publish();
-    DoublePublisher feederTargetPublisher = NetworkTableInstance.getDefault().getDoubleTopic("Subsystems/Feeder/Target Voltage").publish();
+    DoublePublisher feederTargetPublisher = NetworkTableInstance.getDefault().getDoubleTopic("Subsystems/Feeder/Target Velocity").publish();
 
     TalonFX indexer = new TalonFX(Constants.CANConstants.IndexerID, Constants.CANConstants.rio);
-    double targetIndexerVoltage = 0.0;
     DoublePublisher indexerSpeedPublisher = NetworkTableInstance.getDefault().getDoubleTopic("Subsystems/Indexer/Speed").publish();
     DoublePublisher indexerVoltagePublisher = NetworkTableInstance.getDefault().getDoubleTopic("Subsystems/Indexer/Voltage").publish();
-    DoublePublisher indexerTargetPublisher = NetworkTableInstance.getDefault().getDoubleTopic("Subsystems/Indexer/Target Voltage").publish();
+    DoublePublisher indexerTargetPublisher = NetworkTableInstance.getDefault().getDoubleTopic("Subsystems/Indexer/Target Velocity").publish();
 
     TalonFX shooter = new TalonFX(Constants.CANConstants.ShooterID, Constants.CANConstants.rio);
     VelocityVoltage velocityControl = new VelocityVoltage(0).withSlot(0);
-    double targetShooterVoltage = 0.0;
     DoublePublisher shooterSpeedPublisher = NetworkTableInstance.getDefault().getDoubleTopic("Subsystems/Shooter/Speed").publish();
     DoublePublisher shooterVoltagePublisher = NetworkTableInstance.getDefault().getDoubleTopic("Subsystems/Shooter/Voltage").publish();
-    DoublePublisher shooterTargetPublisher = NetworkTableInstance.getDefault().getDoubleTopic("Subsystems/Shooter/Target Voltage").publish();
+    DoublePublisher shooterTargetPublisher = NetworkTableInstance.getDefault().getDoubleTopic("Subsystems/Shooter/Target Velocity").publish();
 
     public enum State {
-        IDLE,
-        PREP_SHOT,
-        SHOOTING,
-        BACKUP,
-        DEBUG;
+        IDLE(0, 0, 0),
+        PREP_SHOT(100, 0, 0),
+        SHOOTING(100, -100, 90),
+        BACKUP(-30, 30, -30),
+        DEBUG(0, 0, 0);
+
+        double shooterSpeed;
+        double feederSpeed;
+        double indexerSpeed;
+
+        State(double shooterSpeed, double feederSpeed, double indexerSpeed) {
+            this.shooterSpeed = shooterSpeed;
+            this.feederSpeed = feederSpeed;
+            this.indexerSpeed = indexerSpeed;
+        }
     }
 
     public State state = State.IDLE;
@@ -77,13 +83,13 @@ public class Shooter extends SubsystemBase {
         shooter.stopMotor();
     }
 
-    public void runFeeder(double voltage) {
-        feeder.setVoltage(voltage);
-        feederTargetPublisher.set(voltage);
+    public void runFeeder(double velocity) {
+        feeder.setControl(velocityControl.withVelocity(velocity));
+        feederTargetPublisher.set(velocity);
     }
 
     public void runIndexer(double velocity) {
-        indexer.setVoltage(velocity);
+        indexer.setControl(velocityControl.withVelocity(velocity));
         indexerTargetPublisher.set(velocity);
     }
 

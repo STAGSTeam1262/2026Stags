@@ -14,13 +14,16 @@ import com.ctre.phoenix6.swerve.SwerveRequest;
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
 import com.pathplanner.lib.commands.FollowPathCommand;
+import com.pathplanner.lib.events.EventTrigger;
 
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.RepeatCommand;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
+import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
 import edu.wpi.first.wpilibj2.command.button.RobotModeTriggers;
 
 import frc.robot.generated.TunerConstants;
@@ -53,6 +56,7 @@ public class RobotContainer {
     private final SendableChooser<Command> autoChooser;
 
     public RobotContainer() {
+
         NamedCommands.registerCommand("shoot", Commands.runOnce(() -> superstructure.setRobotState(RobotState.SHOOTING)));
         NamedCommands.registerCommand("prepareThenShoot", Commands.runOnce(() -> superstructure.setRobotState(RobotState.PREP_SHOOT)).andThen(new WaitCommand(0.5)).andThen(Commands.runOnce(() -> superstructure.setRobotState(RobotState.SHOOTING))));
         NamedCommands.registerCommand("idleShoot", Commands.runOnce(() -> superstructure.setRobotState(RobotState.IDLE_SHOOTING)));
@@ -61,8 +65,9 @@ public class RobotContainer {
         NamedCommands.registerCommand("idleIntake", Commands.runOnce(() -> superstructure.setRobotState(RobotState.IDLE_INTAKING)));
         NamedCommands.registerCommand("deployIntake", Commands.runOnce(() -> intake.runDeploy(-5)));
         NamedCommands.registerCommand("retractIntake", Commands.runOnce(() -> intake.runDeploy(5)));
-        NamedCommands.registerCommand("modulateIntake", Commands.none());
-        NamedCommands.registerCommand("idleModulateIntake", Commands.none());
+        NamedCommands.registerCommand("waitForIntakeToReach", new WaitUntilCommand(intake.hardStop));
+
+        new EventTrigger("intake").onTrue(Commands.runOnce(() -> superstructure.setRobotState(RobotState.INTAKING)));
 
         autoChooser = AutoBuilder.buildAutoChooser("Tests");
         SmartDashboard.putData("Auto Mode", autoChooser);
@@ -91,7 +96,6 @@ public class RobotContainer {
         Constants.OperatorConstants.driverController.leftBumper().whileTrue(drivetrain.faceDriveDirection);
         Constants.OperatorConstants.driverController.rightBumper().whileTrue(drivetrain.faceTarget);
         Constants.OperatorConstants.driverController.b().whileTrue(drivetrain.applyRequest(() -> brake));
-
         Constants.OperatorConstants.driverController.a().onTrue(drivetrain.runOnce(drivetrain::seedFieldCentric));
 
         Constants.OperatorConstants.operatorController.leftTrigger().onTrue(Commands.runOnce(() -> superstructure.setRobotState(RobotState.INTAKING))).onFalse(Commands.runOnce(() -> superstructure.setRobotState(RobotState.IDLE_INTAKING)));

@@ -13,19 +13,7 @@
         {
           "type": "path",
           "data": {
-            "pathName": "Right Trench To Neutral Zone"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "intake"
-          }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "Intake From Right Neutral Zone"
+            "pathName": "Right Trench To Neutral Zone Intake Fast"
           }
         },
         {
@@ -47,6 +35,12 @@
           }
         },
         {
+          "type": "wait",
+          "data": {
+            "waitTime": 1.0
+          }
+        },
+        {
           "type": "named",
           "data": {
             "name": "retractIntake"
@@ -61,7 +55,7 @@
         {
           "type": "wait",
           "data": {
-            "waitTime": 1.0
+            "waitTime": 0.5
           }
         },
         {
@@ -79,19 +73,7 @@
         {
           "type": "wait",
           "data": {
-            "waitTime": 1.0
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "retractIntake"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "waitForIntakeToReach"
+            "waitTime": 0.5
           }
         }
       ]

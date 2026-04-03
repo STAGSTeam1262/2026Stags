@@ -349,12 +349,12 @@ public class Drivetrain extends TunerSwerveDrivetrain implements Subsystem {
         
             double deltaX = shotData.shotPosition().getX() - drivePose.getX();
             double deltaY = shotData.shotPosition().getY() - drivePose.getY();
-            double angle = Math.toDegrees(Math.atan2(deltaY, deltaX));
+            Rotation2d angle = shotData.shotAngle();
 
             this.setControl(
                 drive.withVelocityX(-MathUtil.applyDeadband(Constants.OperatorConstants.driverController.getLeftY(), 0.1) * Constants.DriveConstants.MaxSpeed) // Drive forward with negative Y (forward)
                 .withVelocityY(-MathUtil.applyDeadband(Constants.OperatorConstants.driverController.getLeftX(), 0.1) * Constants.DriveConstants.MaxSpeed) // Drive left with negative X (left)
-                .withTargetDirection(Rotation2d.fromDegrees(angle).plus(Rotation2d.k180deg))
+                .withTargetDirection(superstructure.currentAlliance == Alliance.Blue ? angle.plus(Rotation2d.k180deg) : angle)
             );
         }
     });

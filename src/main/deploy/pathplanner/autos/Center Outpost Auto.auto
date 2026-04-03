@@ -1,0 +1,31 @@
+{
+  "version": "2025.0",
+  "command": {
+    "type": "sequential",
+    "data": {
+      "commands": [
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Outpost From Center"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Outpost To Shoot"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "prepareThenShoot"
+          }
+        }
+      ]
+    }
+  },
+  "resetOdom": true,
+  "folder": null,
+  "choreoAuto": false
+}
