@@ -13,19 +13,19 @@
         {
           "type": "path",
           "data": {
-            "pathName": "Right Trench To Neutral Zone Intake Fast"
+            "pathName": "Left Trench To Neutral Zone Intake"
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "Right Intake To Right Trench"
+            "pathName": "Left Intake To Left Trench"
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "Right Trench To Shoot"
+            "pathName": "Left Trench To Shoot"
           }
         },
         {

@@ -1,10 +1,10 @@
 package frc.robot.subsystems;
 
+import com.ctre.phoenix6.configs.CurrentLimitsConfigs;
 import com.ctre.phoenix6.configs.MotorOutputConfigs;
 import com.ctre.phoenix6.configs.Slot0Configs;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.PositionVoltage;
-import com.ctre.phoenix6.controls.VelocityTorqueCurrentFOC;
 import com.ctre.phoenix6.controls.VelocityVoltage;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.NeutralModeValue;
@@ -38,14 +38,23 @@ public class Intake extends SubsystemBase {
     }
 
     public void configureMotors() {
-        MotorOutputConfigs outputConfigs = new MotorOutputConfigs().withNeutralMode(NeutralModeValue.Coast);
-        Slot0Configs slotConfigs = new Slot0Configs()
+        MotorOutputConfigs deployOutputConfigs = new MotorOutputConfigs().withNeutralMode(NeutralModeValue.Coast);
+        Slot0Configs deploySlotConfigs = new Slot0Configs()
                 .withKP(3)
                 .withKI(0)
                 .withKD(0)
                 .withKV(0.124);
-        TalonFXConfiguration config = new TalonFXConfiguration().withMotorOutput(outputConfigs).withSlot0(slotConfigs);
-        intakeDeploy.getConfigurator().apply(config);
+        TalonFXConfiguration deployConfig = new TalonFXConfiguration().withMotorOutput(deployOutputConfigs).withSlot0(deploySlotConfigs).withCurrentLimits(new CurrentLimitsConfigs().withSupplyCurrentLimit(30).withSupplyCurrentLimitEnable(true));
+        intakeDeploy.getConfigurator().apply(deployConfig);
+
+        MotorOutputConfigs rollerOutputConfigs = new MotorOutputConfigs().withNeutralMode(NeutralModeValue.Coast);
+        Slot0Configs rollerSlotConfigs = new Slot0Configs()
+                .withKP(0.1)
+                .withKI(0)
+                .withKD(0)
+                .withKV(0.124);
+        TalonFXConfiguration rollerConfig = new TalonFXConfiguration().withMotorOutput(rollerOutputConfigs);
+        intakeDeploy.getConfigurator().apply(rollerConfig);
     }
 
     public void runRoller(double velocity) {

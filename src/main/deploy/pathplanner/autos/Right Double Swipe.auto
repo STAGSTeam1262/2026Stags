@@ -13,37 +13,31 @@
         {
           "type": "path",
           "data": {
-            "pathName": "Right Trench To Neutral Zone"
+            "pathName": "Right Trench To Neutral Zone Intake"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Right Intake Over Right Bump"
           }
         },
         {
           "type": "named",
           "data": {
-            "name": "intake"
-          }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "Intake From Right Neutral Zone"
-          }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "Right Intake To Right Trench"
-          }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "Right Trench To Shoot"
+            "name": "autoRotate"
           }
         },
         {
           "type": "named",
           "data": {
             "name": "prepareThenShoot"
+          }
+        },
+        {
+          "type": "wait",
+          "data": {
+            "waitTime": 0.5
           }
         },
         {
@@ -61,7 +55,7 @@
         {
           "type": "wait",
           "data": {
-            "waitTime": 1.0
+            "waitTime": 0.5
           }
         },
         {
@@ -77,21 +71,39 @@
           }
         },
         {
+          "type": "named",
+          "data": {
+            "name": "deployIntake"
+          }
+        },
+        {
           "type": "wait",
           "data": {
-            "waitTime": 1.0
+            "waitTime": 2.5
           }
         },
         {
           "type": "named",
           "data": {
-            "name": "retractIntake"
+            "name": "idleShoot"
           }
         },
         {
-          "type": "named",
+          "type": "path",
           "data": {
-            "name": "waitForIntakeToReach"
+            "pathName": "Right Trench Run Back"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Right Trench Run Back - Intake"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Right Trench Run Back To Shoot"
           }
         }
       ]

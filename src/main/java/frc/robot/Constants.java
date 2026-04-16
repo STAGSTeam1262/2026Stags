@@ -11,7 +11,6 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.interpolation.InterpolatingDoubleTreeMap;
-import edu.wpi.first.wpilibj2.command.button.CommandStadiaController;
 import frc.robot.generated.TunerConstants;
 import frc.robot.util.Controller;
 
@@ -20,7 +19,6 @@ public class Constants {
     public static final class OperatorConstants {
         public static final Controller driverController = new Controller(0);
         public static final Controller operatorController = new Controller(1);
-        public static final CommandStadiaController test = new CommandStadiaController(2);
     }
 
     public static final class FieldConstants {
@@ -56,8 +54,8 @@ public class Constants {
         public static double debugIndexerSpeed = 0.0;
         public static double debugShooterSpeed = 0.0;
 
-        public static double feederSpeed = -100.0;
-        public static double indexerSpeed = 90.0;
+        public static double feederSpeed = -12.0;
+        public static double indexerSpeed = 12.0;
 
         // Will be switched to when vision is down for any reason.
         public static double fixedShooterSpeed = 100.0;

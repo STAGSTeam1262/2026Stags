@@ -1,0 +1,109 @@
+{
+  "version": "2025.0",
+  "command": {
+    "type": "sequential",
+    "data": {
+      "commands": [
+        {
+          "type": "named",
+          "data": {
+            "name": "deployIntake"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Left Trench To Neutral Zone Intake"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Left Intake Over Left Bump"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "autoRotate"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "prepareThenShoot"
+          }
+        },
+        {
+          "type": "wait",
+          "data": {
+            "waitTime": 0.5
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "retractIntake"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "waitForIntakeToReach"
+          }
+        },
+        {
+          "type": "wait",
+          "data": {
+            "waitTime": 0.5
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "deployIntake"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "waitForIntakeToReach"
+          }
+        },
+        {
+          "type": "wait",
+          "data": {
+            "waitTime": 2.5
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "idleShoot"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Left Trench Run Back"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Left Trench Run Back - Intake"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Left Trench Run Back To Shoot"
+          }
+        }
+      ]
+    }
+  },
+  "resetOdom": true,
+  "folder": null,
+  "choreoAuto": false
+}

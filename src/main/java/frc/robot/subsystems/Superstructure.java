@@ -234,7 +234,7 @@ public class Superstructure extends SubsystemBase {
     }
 
     public void intake() {
-        intake.runRoller(8);
+        intake.runRoller(6);
     }
 
     public void idleShoot() {

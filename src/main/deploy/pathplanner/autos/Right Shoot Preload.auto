@@ -7,13 +7,7 @@
         {
           "type": "path",
           "data": {
-            "pathName": "Center Field Path"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "autoRotate"
+            "pathName": "Right Rotate Towards Hub"
           }
         },
         {

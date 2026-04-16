@@ -30,6 +30,7 @@ public class Shooter extends SubsystemBase {
     DoublePublisher shooterSpeedPublisher = NetworkTableInstance.getDefault().getDoubleTopic("Subsystems/Shooter/Speed").publish();
     DoublePublisher shooterVoltagePublisher = NetworkTableInstance.getDefault().getDoubleTopic("Subsystems/Shooter/Voltage").publish();
     DoublePublisher shooterTargetPublisher = NetworkTableInstance.getDefault().getDoubleTopic("Subsystems/Shooter/Target Velocity").publish();
+    DoublePublisher shooterCurrentPublisher = NetworkTableInstance.getDefault().getDoubleTopic("Subsystems/Shooter/Current").publish();
 
     public enum State {
         IDLE(0, 0, 0),
@@ -84,12 +85,13 @@ public class Shooter extends SubsystemBase {
     }
 
     public void runFeeder(double velocity) {
-        feeder.setControl(velocityControl.withVelocity(velocity));
+        //feeder.setControl(velocityControl.withVelocity(velocity));
+        feeder.setVoltage(velocity);
         feederTargetPublisher.set(velocity);
     }
 
     public void runIndexer(double velocity) {
-        indexer.setControl(velocityControl.withVelocity(velocity));
+        indexer.setVoltage(velocity);
         indexerTargetPublisher.set(velocity);
     }
 
@@ -112,6 +114,7 @@ public class Shooter extends SubsystemBase {
 
         shooterSpeedPublisher.set(shooter.getVelocity().getValueAsDouble());
         shooterVoltagePublisher.set(shooter.getMotorVoltage().getValueAsDouble());
+        shooterCurrentPublisher.set(shooter.getSupplyCurrent().getValueAsDouble());
 
         statePublisher.set(state.toString());
 

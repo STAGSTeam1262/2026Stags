@@ -6,9 +6,6 @@ package frc.robot;
 
 import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
 
-import static edu.wpi.first.units.Units.Inches;
-import static edu.wpi.first.units.Units.Meter;
-
 import com.ctre.phoenix6.swerve.SwerveRequest;
 
 import com.pathplanner.lib.auto.AutoBuilder;
@@ -21,11 +18,9 @@ import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
-import edu.wpi.first.wpilibj2.command.RepeatCommand;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
 import edu.wpi.first.wpilibj2.command.button.RobotModeTriggers;
-
 import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.Drivetrain;
 import frc.robot.subsystems.Intake;
@@ -34,7 +29,6 @@ import frc.robot.subsystems.Superstructure;
 import frc.robot.subsystems.Turret;
 import frc.robot.subsystems.Vision;
 import frc.robot.subsystems.Superstructure.RobotState;
-import frc.robot.util.FuelSim;
 
 public class RobotContainer {
     /* Setting up bindings for necessary control of the swerve drive platform */
@@ -67,13 +61,15 @@ public class RobotContainer {
         NamedCommands.registerCommand("retractIntake", Commands.runOnce(() -> intake.runDeploy(5)));
         NamedCommands.registerCommand("waitForIntakeToReach", new WaitUntilCommand(intake.hardStop));
 
+        NamedCommands.registerCommand("autoRotate", drivetrain.faceAngle);
+
         new EventTrigger("intake").onTrue(Commands.runOnce(() -> superstructure.setRobotState(RobotState.INTAKING)));
+        new EventTrigger("deployIntake").onTrue(Commands.runOnce(() -> intake.runDeploy(-5)));
 
         autoChooser = AutoBuilder.buildAutoChooser("Tests");
         SmartDashboard.putData("Auto Mode", autoChooser);
 
         configureBindings();
-        configureFuelSim();
 
         // Warmup PathPlanner to avoid Java pauses
         FollowPathCommand.warmupCommand().schedule();
@@ -119,24 +115,5 @@ public class RobotContainer {
     public Command getAutonomousCommand() {
         /* Run the path selected from the auto chooser */
         return autoChooser.getSelected();
-    }
-
-    private void configureFuelSim() {
-        FuelSim instance = FuelSim.getInstance();
-        instance.spawnStartingFuel();
-        instance.registerRobot(
-            Meter.convertFrom(28, Inches), 
-            Meter.convertFrom(28, Inches), 
-            Meter.convertFrom(5.5, Inches), 
-            () -> drivetrain.getState().Pose, 
-            () -> drivetrain.getState().Speeds);
-
-        instance.start();
-        SmartDashboard.putData(Commands.runOnce(() -> {
-                FuelSim.getInstance().clearFuel();
-                FuelSim.getInstance().spawnStartingFuel();
-            })
-            .withName("Reset Fuel")
-            .ignoringDisable(true));
     }
 }

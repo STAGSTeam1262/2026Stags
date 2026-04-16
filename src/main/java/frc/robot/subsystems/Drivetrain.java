@@ -28,6 +28,7 @@ import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.Notifier;
 import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.Subsystem;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.Constants;
@@ -67,6 +68,8 @@ public class Drivetrain extends TunerSwerveDrivetrain implements Subsystem {
             .withDeadband(Constants.DriveConstants.MaxSpeed * 0.1).withRotationalDeadband(Constants.DriveConstants.MaxAngularRate * 0.1)
             .withDriveRequestType(DriveRequestType.OpenLoopVoltage)
             .withHeadingPID(7, 0, 0);
+
+    private final SwerveRequest.Idle idle = new SwerveRequest.Idle();
 
     /* SysId routine for characterizing translation. This is used to find PID gains for the drive motors. */
     private final SysIdRoutine m_sysIdRoutineTranslation = new SysIdRoutine(
@@ -341,14 +344,9 @@ public class Drivetrain extends TunerSwerveDrivetrain implements Subsystem {
     }
 
     public Command faceTarget = run(() -> {
-        Pose2d drivePose = getState().Pose;
-
         if (superstructure.shotData != null) {
 
             ShotData shotData = superstructure.shotData;
-        
-            double deltaX = shotData.shotPosition().getX() - drivePose.getX();
-            double deltaY = shotData.shotPosition().getY() - drivePose.getY();
             Rotation2d angle = shotData.shotAngle();
 
             this.setControl(
@@ -358,6 +356,19 @@ public class Drivetrain extends TunerSwerveDrivetrain implements Subsystem {
             );
         }
     });
+
+    public Command faceAngle = run(() -> {
+        if (superstructure.shotData != null) {
+
+            ShotData shotData = superstructure.shotData;
+            Rotation2d angle = shotData.shotAngle();
+
+            this.setControl(
+                drive.withTargetDirection(superstructure.currentAlliance == Alliance.Blue ? angle.plus(Rotation2d.k180deg) : angle)
+            );
+        }
+    }).until(() -> MathUtil.isNear(superstructure.shotData.shotAngle().plus(Rotation2d.k180deg).getDegrees(), getState().Pose.getRotation().getDegrees(), 10))
+    .finallyDo(() -> setControl(idle));
 
     public Command faceDriveDirection = run(() -> {
         double angle = 0;
